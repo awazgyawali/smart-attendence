@@ -1,0 +1,23 @@
+name: attendence
+description: A new Flutter project.
+
+dependencies:
+  firebase_core: "^0.2.4"
+  firebase_analytics: "^1.0.1"
+  firebase_auth: "^0.5.12"
+  firebase_messaging: "^1.0.3"
+  firebase_database: "^1.0.1"
+  google_sign_in: "^3.0.4"
+  shared_preferences: "^0.4.2"
+  connectivity: "^0.3.1"
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
