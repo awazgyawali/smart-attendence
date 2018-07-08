@@ -132,7 +132,7 @@ class CreateTeamState extends State<CreateTeam> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Create a Company"),
+        title: Text("Start a Team"),
       ),
       body: Form(
         key: _formKey,
@@ -147,7 +147,7 @@ class CreateTeamState extends State<CreateTeam> {
                   border: const UnderlineInputBorder(),
                   filled: true,
                   hintText: '',
-                  labelText: 'Company Name *',
+                  labelText: 'Team Name *',
                 ),
                 onSaved: (String value) {
                   team.name = value;
@@ -161,7 +161,7 @@ class CreateTeamState extends State<CreateTeam> {
                   border: const UnderlineInputBorder(),
                   filled: true,
                   hintText: '',
-                  labelText: 'Company Email *',
+                  labelText: 'Team Email *',
                 ),
                 onSaved: (String value) {
                   team.email = value;
@@ -236,7 +236,7 @@ class CreateTeamState extends State<CreateTeam> {
                 child: new RaisedButton(
                   color: Colors.blue,
                   textColor: Colors.white,
-                  child: const Text('Create'),
+                  child: const Text('Submit'),
                   onPressed: _handleSubmitted,
                 ),
               ),

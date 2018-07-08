@@ -32,7 +32,7 @@ class LoginScreenState extends State<LoginScreen> {
         setupForExistingCompany(data.value);
       } else {
         uploadUserData(user).then((sd) {
-          Navigator.of(context).pushReplacementNamed("/createTeam");
+          Navigator.of(context).pushReplacementNamed("/firstLogin");
         });
       }
     });

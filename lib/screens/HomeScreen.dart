@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity/connectivity.dart';
 
 import '../components/HomeBody.dart';
 import '../components/Drawer.dart';
@@ -27,7 +26,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   attendToday() {
-    DateTime now = new DateTime.now();
+    DateTime now = new DateTime(2017,12,4);
     if (!_pref
         .getStringList("companyOpenDays")
         .contains(now.weekday.toString())) {
@@ -46,7 +45,7 @@ class HomeScreenState extends State<HomeScreen> {
       _ref.child("date").set("${now.year}-${now.month}-${now.day}");
 
       _ref
-          .child("attendence")
+          .child("attendees")
           .child(user.uid)
           .set({"uid": user.uid, "present": true, "message": ""});
     }

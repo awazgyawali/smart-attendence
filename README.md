@@ -1,6 +1,6 @@
-# attendence
+# Smart Attendence System
 
-A new Flutter project.
+Developed with love in Flutter
 
 ## Getting Started
 

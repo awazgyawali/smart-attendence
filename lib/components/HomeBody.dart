@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './FirstOpen.dart';
 
 List months = [
+  "",
   "Jan",
   "Feb",
   "Mar",
@@ -96,10 +97,15 @@ class HomeBodyState extends State<HomeBody> {
   bool _sortAscending = true;
   final AttendenceDataSource _attendencesDataSource = AttendenceDataSource();
   SharedPreferences _pref;
+  String companyKey = "";
+
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((pref) {
       this._pref = pref;
+      setState(() {
+        companyKey = pref.getString("companyKey");
+      });
     });
   }
 
@@ -121,65 +127,84 @@ class HomeBodyState extends State<HomeBody> {
     return columns;
   }
 
-  Future<dynamic> getDataFromFirebase() async {
+  Future<void> pullHeader() async {
     _attendencesDataSource.names = List();
-    _attendencesDataSource._attendences = <Attendence>[];
-
-    DataSnapshot userSnapshot =
-        await _database.reference().child(_pref.getString("companyKey")).child("members").once();
+    DataSnapshot userSnapshot = await _database
+        .reference()
+        .child(_pref.getString("companyKey"))
+        .child("members")
+        .once();
     for (var value in userSnapshot.value.values) {
       _attendencesDataSource.names
           .add({"key": value["uid"], "name": value["name"]});
     }
+    return userSnapshot;
+  }
 
-    DataSnapshot attendenceSnapahot =
-        await _database.reference().child(_pref.getString("companyKey")).child("attendence_data").once();
-
+  getDataFromFirebase(attendenceSnapahot) {
+    _attendencesDataSource._attendences = <Attendence>[];
+    pullHeader();
     for (var value in attendenceSnapahot.value.values) {
       Attendence attendence = Attendence(value["date"]);
       attendence.message = Map();
       attendence.present = Map();
-      for (var attValue in value["attendence"].values) {
+      for (var attValue in value["attendees"].values) {
         attendence.message[attValue["uid"]] = attValue["message"];
         attendence.present[attValue["uid"]] = attValue["present"];
       }
       _attendencesDataSource._attendences.add(attendence);
     }
-    return attendenceSnapahot;
+
+    return ListView(
+      children: <Widget>[
+        PaginatedDataTable(
+          header: Text(_pref.getString("companyName")),
+          rowsPerPage: _rowsPerPage,
+          sortAscending: _sortAscending,
+          onRowsPerPageChanged: (int value) {
+            setState(() {
+              _rowsPerPage = value;
+            });
+          },
+          columns: getHeaders(),
+          source: _attendencesDataSource,
+        )
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getDataFromFirebase(),
-      builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
-        if (asyncSnapshot.hasData) {
-          if (asyncSnapshot.data != null) {
-            return ListView(
-              children: <Widget>[
-                PaginatedDataTable(
-                  header: Text(_pref.getString("companyName")),
-                  rowsPerPage: _rowsPerPage,
-                  sortAscending: _sortAscending,
-                  onRowsPerPageChanged: (int value) {
-                    setState(() {
-                      _rowsPerPage = value;
-                    });
-                  },
-                  columns: getHeaders(),
-                  source: _attendencesDataSource,
-                )
-              ],
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+        future: pullHeader(),
+        builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+          if (asyncSnapshot.hasData) {
+            if (asyncSnapshot.data != null) {
+              return StreamBuilder(
+                stream: _database
+                    .reference()
+                    .child(companyKey)
+                    .child("attendence_data")
+                    .onValue,
+                builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+                  if (asyncSnapshot.hasData) {
+                    if (asyncSnapshot.data != null) {
+                      return getDataFromFirebase(asyncSnapshot.data.snapshot);
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  } else {
+                    return FirstOpenPrompt();
+                  }
+                },
+              );
+            }
           }
-        } else {
-          return FirstOpenPrompt();
-        }
-      },
-    );
+          return Center(
+                        child: CircularProgressIndicator(),
+                      );
+        });
   }
 }

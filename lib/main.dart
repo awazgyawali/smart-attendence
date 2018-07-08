@@ -4,6 +4,8 @@ import './screens/SplashScreen.dart';
 import './screens/LoginScreen.dart';
 import './screens/HomeScreen.dart';
 import './screens/CreateTeam.dart';
+import './screens/JoinTeam.dart';
+import './screens/FirstLogin.dart';
 
 void main() => runApp(new MyApp());
 
@@ -19,6 +21,8 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/splash': (BuildContext context) => SplashScreen(),
         '/login': (BuildContext context) => LoginScreen(),
+        '/firstLogin': (BuildContext context) => FirstLogin(),
+        '/joinTeam': (BuildContext context) => JoinTeam(),
         '/createTeam': (BuildContext context) => CreateTeam(),
         '/home': (BuildContext context) => HomeScreen(),
       },
